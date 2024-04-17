@@ -5,8 +5,8 @@ import re
 
 jobs: pd.DataFrame = scrape_jobs(
     site_name=["indeed", "linkedin", "zip_recruiter", "glassdoor"],
-    search_term="data scientist",
-    location="New York, NY",
+    search_term="data scientist",# replace with any role you want
+    location="New York, NY",#replace with any location you desire
     results_wanted=25,  # be wary the higher it is, the more likey you'll get blocked (rotating proxy can help tho)
     country_indeed="USA",
     # proxy="http://jobspy:5a4vpWtj8EeJ2hoYzk@ca.smartproxy.com:20001",
@@ -51,7 +51,7 @@ def save_messages_to_file(messages, filename='emails.txt'):
             file.write(f"Message: {message_info['message']}\n\n")
 
 # Assuming you have a dataframe `jobs_df` with job listing data
-jobs_df = pd.read_csv('jobs.csv')
+jobs_df = jobs
 
 # Assuming 'emails' column exists; if not, adjust data gathering/entry to include it
 # Filter out rows without valid emails

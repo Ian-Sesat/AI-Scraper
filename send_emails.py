@@ -1,3 +1,6 @@
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 import pandas as pd
 import re
 
@@ -19,8 +22,35 @@ def create_messages(df):
         messages.append({'email': row['emails'], 'message': message})
     return messages
 
+# Send email function
+def send_email(sender_email, sender_password, recipient_email, subject, message):
+    # Set up the SMTP server
+    smtp_server = "smtp.gmail.com"
+    port = 587  # For starttls
+
+    # Create a multipart message and set headers
+    msg = MIMEMultipart()
+    msg['From'] = sender_email
+    msg['To'] = recipient_email
+    msg['Subject'] = subject
+
+    # Add message body
+    msg.attach(MIMEText(message, 'plain'))
+
+    # Start TLS for security
+    server = smtplib.SMTP(smtp_server, port)
+    server.starttls()
+
+    # Login with sender email credentials
+    server.login(sender_email, sender_password)
+
+    # Send email
+    server.sendmail(sender_email, recipient_email, msg.as_string())
+
+    # Quit server
+    server.quit()
+
 # Assuming you have a dataframe `jobs_df` with job listing data
-# Example data loading (adjust as necessary based on your actual data loading method)
 jobs_df = pd.read_csv('jobs.csv')
 
 # Assuming 'emails' column exists; if not, adjust data gathering/entry to include it
@@ -30,7 +60,18 @@ valid_emails_df = jobs_df[jobs_df['emails'].apply(is_valid_email)]
 # Generate messages for valid email entries
 messages_to_send = create_messages(valid_emails_df)
 
-# Print messages for review (or connect to an email sending service)
+# Email sender credentials
+sender_email = "your.email@gmail.com"
+sender_password = "your_password"   # Use an app-specific password if 2-factor authentication is enabled
+
+# Send messages
 for message_info in messages_to_send:
-    print(f"Email: {message_info['email']}")
-    print(f"Message: {message_info['message']}\n")
+    recipient_email = message_info['email']
+    message = message_info['message']
+    subject = "Regarding Job Posting"
+
+    # Send email
+    send_email(sender_email, sender_password, recipient_email, subject, message)
+    print(f"Email sent to {recipient_email}.")
+
+print("All emails have been sent.")
